@@ -12,15 +12,22 @@ import (
 )
 
 var (
-	dmReg32         = syscall.NewLazyDLL("DmReg.dll")
-	procSetDllPathA = dmReg32.NewProc("SetDllPathA")
-	procSetDllPathW = dmReg32.NewProc("SetDllPathW")
+	dmReg32         *syscall.LazyDLL
+	procSetDllPathA *syscall.LazyProc
+	procSetDllPathW *syscall.LazyProc
 )
 
 // DmSoft ...
 type DmSoft struct {
 	dm       *ole.IDispatch
 	IUnknown *ole.IUnknown
+}
+
+//免注册时，添加路径支持
+func Init(path string) {
+	dmReg32 = syscall.NewLazyDLL(path + "DmReg.dll")
+	procSetDllPathA = dmReg32.NewProc("SetDllPathA")
+	procSetDllPathW = dmReg32.NewProc("SetDllPathW")
 }
 
 // New return *DmSoft.DmSoft
